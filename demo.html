@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="main" style="height: 300px; width: 95%">
+
+    </div>
+</body>
+
+<script type="text/javascript" src="echarts3/echarts.js"></script>
+<script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('main'));
+    var options = {
+        title: {
+            text: '未来一周气温变化',
+            subtext: '纯属虚构'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        xAxis:  {
+            type: 'category',
+            boundaryGap: false,
+            data: ['周一','周二','周三','周四','周五','周六','周日']
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                formatter: '{value} °C'
+            }
+        },
+        series: [
+            {
+                name: '最高气温',
+                type: 'line',
+                data: [6, 8]
+            },
+            {
+                name: '最高气温1',
+                type: 'line',
+                data: ['-', 8, 11]
+            },
+            {
+                name: '最高气温2',
+                type: 'line',
+                data: ['-','-',11, 10]
+            },
+            {
+                name:'平行于y轴的趋势线',
+                type:'line',
+                //data:[0],
+                markLine: {
+                    name:'aa',
+                    data: [[
+                        {coord:['周二',0]},
+                        {coord:['周二',12]}//如何获取grid上侧最大值，目前是写死的
+                    ],[
+                        {coord:['周三',0]},
+                        {coord:['周三',12]}//如何获取grid上侧最大值，目前是写死的
+                    ]]
+                }
+            }
+        ]
+    };
+    myChart.setOption(options);
+</script>
+</html>

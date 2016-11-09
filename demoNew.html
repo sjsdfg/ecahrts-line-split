@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="row">
+        <div class="container">
+            <div class="col-lg-4 col-md-4">
+                <button class="btn btn-default" onclick="initCharts()">生成图像</button>
+            </div>
+
+            <div class="col-lg-8 col-md-8">
+                <div id="main" style="height: 300px;">
+
+                </div>
+                <button id="adjust" class="btn btn-primary pull-right" onclick="transCharts(['周三', '周五'])">调整</button>
+            </div>
+        </div>
+    </div>
+</body>
+<link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+<script type="text/javascript" src="echarts3/echarts.js"></script>
+<script type="text/javascript" src="jquery-2.1.4.min.js"></script>
+<script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('main'));
+
+    function initCharts() {
+        var option = {
+            title: {
+                text: '未来一周气温变化',
+                subtext: '纯属虚构'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis:  {
+                type: 'category',
+                boundaryGap: false,
+                data: ['周一','周二','周三','周四','周五','周六','周日']
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '{value} °C'
+                },
+                max: 15
+            },
+            series: [
+                {
+                    name:'最高气温',
+                    type:'line',
+                    data:[6, 8, 11, 10, 12, 13, 10]
+                }
+            ]
+        };
+        myChart.clear();
+        myChart.setOption(option);
+    }
+
+    function transCharts(splitPoints) {
+        var oldOption = myChart.getOption();
+        var data = oldOption.series[0].data;
+        var dataTime = oldOption.xAxis[0].data;
+        var splitIndex = [];
+        for (var i =0; i < splitPoints.length; i++) {
+            splitIndex.push(dataTime.indexOf(splitPoints[i]));
+        }
+        console.log(splitIndex);
+
+        var series = [];
+        var index = 0;
+        var seriesData = new Array(splitIndex.length+1);
+        for (var i = 0; i < seriesData.length; i++) seriesData[i] = new Array();
+        for (var i = 0; i < data.length; i++) {
+            console.log(i + '-----------' + index);
+            if (i < splitIndex[index]) {
+                seriesData[index].push(data[i]);
+                for (var j = index+1; j < seriesData.length; j++) {
+                    seriesData[j].push('-');
+                }
+            }
+            else if (i == splitIndex[index]) {
+                seriesData[index].push(data[i]);
+                seriesData[++index].push(data[i]);
+                for (var j = index+1; j < seriesData.length; j++) {
+                    seriesData[j].push('-');
+                }
+            }
+            else {
+                seriesData[index].push(data[i]);
+            }
+            for (var k = 0; k < seriesData.length; k++) {
+                console.log(seriesData[k]);
+            }
+            console.log(i + '-----------');
+        }
+
+        for (var i = 0; i < seriesData.length; i++) {
+            series.push({
+                name: i+'',
+                type: 'line',
+                data: seriesData[i]
+            });
+        }
+        var markLineData = [];
+        for (var i = 0; i < splitPoints.length; i++) {
+            markLineData.push([
+                {coord:[splitPoints[i], 0]},
+                {coord:[splitPoints[i], oldOption.yAxis[0].max]}
+            ])
+        }
+        series.push({
+            name:'平行于y轴的趋势线',
+            type:'line',
+            markLine: {
+                name:'aa',
+                data: markLineData
+            }
+        })
+
+
+        var options = {
+            title: oldOption.title,
+            tooltip: oldOption.tooltip,
+            xAxis:  oldOption.xAxis,
+            yAxis: oldOption.yAxis,
+            series: series
+//            series: [
+//                {
+//                    name: '最高气温',
+//                    type: 'line',
+//                    data: [6, 8, 11]
+//                },
+//                {
+//                    name: '最高气温1',
+//                    type: 'line',
+//                    data: ['-', '-', 11, 10, 12]
+//                },
+//                {
+//                    name: '最高气温2',
+//                    type: 'line',
+//                    data: ['-','-', '-', '-', 12, 13, 10]
+//                },
+//                {
+//                    name:'平行于y轴的趋势线',
+//                    type:'line',
+//                    //data:[0],
+//                    markLine: {
+//                        name:'aa',
+//                        data: [[
+//                            {coord:['周三',0]},
+//                            {coord:['周三',15]}//如何获取grid上侧最大值，目前是写死的
+//                        ],[
+//                            {coord:['周五',0]},
+//                            {coord:['周五',15]}//如何获取grid上侧最大值，目前是写死的
+//                        ]]
+//                    }
+//                }
+//            ]
+        };
+        myChart.clear();
+        myChart.setOption(options);
+    }
+</script>
+</html>
